@@ -20,8 +20,6 @@ async def orchestrator(broker: TaskBroker):
         await broker.move_to_execution(ready_tasks)
         logger.info(f"[Orchestrator] Задача отправлена в конвейер: {ready_tasks}")
 
-      await asyncio.sleep(0.5)
-
     except Exception as e:
       logger.error(f"[Orchestrator] Ошибка: {e}")
       await asyncio.sleep(1)

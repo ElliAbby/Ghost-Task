@@ -10,21 +10,21 @@ from app.engine.orchestrator import orchestrator
 from app.engine.worker import worker
 
 
-logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 
 async def main():
   redis = Redis.from_url(config.REDIS_URL, decode_responses=True)
   broker = TaskBroker(redis)
-  print("Engine запущен и слушает Redis...")
+  logger.info(f"Engine запущен и слушает Redis...\nworkers={config.WORKER_COUNT}, redis={config.REDIS_URL}")
 
   setup_signals()
 
+  worker_tasks = [worker(broker=broker, worker_id=i) for i in range(1, config.WORKER_COUNT + 1)]
+
   await asyncio.gather(
     orchestrator(broker),
-    worker(broker=broker, worker_id=1),
-    worker(broker=broker, worker_id=2),
-    worker(broker=broker, worker_id=3),
+    *worker_tasks
   )
 
 
@@ -32,4 +32,4 @@ if __name__ == "__main__":
   try:
     asyncio.run(main())
   except KeyboardInterrupt:
-    print("Выход...")
+    logger.info("Выход...")

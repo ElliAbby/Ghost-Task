@@ -4,14 +4,15 @@ import time
 from redis.asyncio import Redis
 
 from app.core.schemas import TaskBase
+from app.core.config import config
 
 
 class TaskBroker:
   def __init__(self, redis: Redis):
     self.redis = redis
-    self.delayed_key = "delayed_tasks"
-    self.executing_key = "execution_queue"
-    self.dead_letter_key = "dead_letter_queue"
+    self.delayed_key = config.DELAYED_KEY
+    self.executing_key = config.EXECUTING_KEY
+    self.dead_letter_key = config.DEAD_LETTER_KEY
 
   async def add_task(self, task: TaskBase, delay: int):
     '''Добавление задачи в очередь с задержкой'''

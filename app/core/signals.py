@@ -1,13 +1,15 @@
 import asyncio
 import signal
+import logging
 
+logger = logging.getLogger(__name__)
 
 stop_event = asyncio.Event()
 
 
 def heandle_exit():
   '''Функция, которая сработает при нажатии Ctrl+C'''
-  print("\n[System] Получен сигнал остановки. Завершаем работу...")
+  logger.info("\n[System] Получен сигнал остановки. Завершаем работу...")
   stop_event.set()
 
 

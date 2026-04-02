@@ -1,3 +1,5 @@
+import logging
+
 import uvicorn
 from fastapi import FastAPI
 from redis.asyncio import Redis
@@ -7,13 +9,16 @@ from app.api.routes import router as api_router
 from app.core.config import config
 
 
+logger = logging.getLogger(__name__)
+
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
   app.state.redis = Redis.from_url(config.REDIS_URL, decode_responses=True)
-  print("API: Соединение с Redis установлено")
+  logger.info("API: Соединение с Redis установлено")
   yield
   await app.state.redis.close()
-  print("API: Соединение с Redis закрыто")
+  logger.info("API: Соединение с Redis закрыто")
 
 
 app = FastAPI(

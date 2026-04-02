@@ -1,16 +1,18 @@
 import asyncio
+import logging
 
+logger = logging.getLogger(__name__)
 
 async def send_email_welcome(email: str, name: str, **kwargs):
-  print(f"--- Отправка письма для {name} ({email}) ---")
+  logger.info(f"--- Отправка письма для {name} ({email}) ---")
   await asyncio.sleep(2)
-  print(f"--- Письмо для {name} ({email}) отправлено! ---")
+  logger.info(f"--- Письмо для {name} ({email}) отправлено! ---")
 
 
 async def sync_user_data(user_id: int):
-  print(f"--- Синхронизация данных пользователя {user_id} ---")
+  logger.info(f"--- Синхронизация данных пользователя {user_id} ---")
   await asyncio.sleep(2)
-  print(f"--- Данные пользователя {user_id} синхронизированы! ---")
+  logger.info(f"--- Данные пользователя {user_id} синхронизированы! ---")
 
 
 TASK_MAP = {
