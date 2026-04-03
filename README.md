@@ -84,29 +84,43 @@ pip install -r requirements.txt
 
 2. Запуск инфраструктуры
 
+### Запуск через Docker
+
+1. Запуск:
+
 ```bash
 docker-compose up -d
 ```
 
-3. Запуск компонентов
+Перейти на http://localhost:8000
 
-Терминал 1: API
-
-```bash
-python main_api.py
-```
-
-Терминал 2: Engine (Orchestrator + Workers)
+2. Остановка:
 
 ```bash
-python main_engine.py
+docker-compose down
 ```
 
-4. Завершение работы Docker контейнера
+<details>
+<summary>Просмотр логов</summary>
 
-```bash
-docker compose down
-```
+1. Все логи всех сервисов:  
+   `docker compose logs`
+
+2. Смотреть логи в реальном времени:  
+   `docker compose logs -f`
+
+3. Логи только нужных сервисов:  
+   `docker compose logs -f api engine redis`
+
+4. Только последние N строк:  
+   `docker compose logs --tail=100 api`  
+   `docker compose logs --tail=200 engine`
+
+5. Если нужен только один контейнер:  
+`docker logs -f ghost_api`  
+`docker logs -f ghost_engine`  
+`docker logs -f ghost_redis`
+</details>
 
 ## API Documentation
 

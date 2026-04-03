@@ -12,6 +12,13 @@ from app.core.config import config
 logger = logging.getLogger(__name__)
 
 
+def setup_logging() -> None:
+  logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s | %(levelname)s | %(name)s | %(message)s",
+  )
+
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
   app.state.redis = Redis.from_url(config.REDIS_URL, decode_responses=True)
@@ -37,4 +44,5 @@ async def root():
 
 
 if __name__ == "__main__":
-  uvicorn.run("main_api:app", host="127.0.0.1", port=8000, reload=True)
+  setup_logging()
+  uvicorn.run("main_api:app", host="0.0.0.0", port=8000, reload=False)

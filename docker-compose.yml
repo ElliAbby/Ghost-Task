@@ -1,9 +1,52 @@
-version: "3.8"
-
 services:
   redis:
-    image: redis:7-alpine
+    image: redis:latest
     container_name: ghost_redis
     ports:
       - "6379:6379"
+    volumes:
+      - redis_data:/data
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: 512M
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
     restart: always
+    networks:
+      - ghost_network
+
+  api:
+    build: .
+    container_name: ghost_api
+    command: python main_api.py
+    env_file: .env
+    ports:
+      - "8000:8000"
+    depends_on:
+      redis:
+        condition: service_healthy
+    networks:
+      - ghost_network
+
+  engine:
+    build: .
+    container_name: ghost_engine
+    command: python main_engine.py
+    env_file: .env
+    depends_on:
+      redis:
+        condition: service_healthy
+    networks:
+      - ghost_network
+
+networks:
+  ghost_network:
+    driver: bridge
+
+volumes:
+  redis_data:

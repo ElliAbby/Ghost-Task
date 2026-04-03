@@ -13,6 +13,13 @@ from app.engine.worker import worker
 logger = logging.getLogger(__name__)
 
 
+def setup_logging() -> None:
+  logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s | %(levelname)s | %(name)s | %(message)s",
+  )
+
+
 async def main():
   redis = Redis.from_url(config.REDIS_URL, decode_responses=True)
   broker = TaskBroker(redis)
@@ -30,6 +37,7 @@ async def main():
 
 if __name__ == "__main__":
   try:
+    setup_logging()
     asyncio.run(main())
   except KeyboardInterrupt:
     logger.info("Выход...")
