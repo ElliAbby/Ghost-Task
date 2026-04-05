@@ -161,3 +161,32 @@ POST /tasks
   "delay": 60
 }
 ```
+
+### Контракт payload по типам задач
+
+| `function_name` | Поле | Тип | Обязательное | Ограничения |
+|---|---|---|---|---|
+| `send_email` | `email` | string | ✅ | Валидный email-адрес (RFC 5322) |
+| `send_email` | `name` | string | ✅ | Длина: 1–100 символов |
+| `sync_data` | `user_id` | integer | ✅ | > 0 |
+
+**Общие правила:**
+
+- `function_name` — только из списка допустимых значений: `send_email`, `sync_data`. Любое другое значение вернёт `422 Unprocessable Entity`.
+- Лишние поля в `payload` **запрещены** (`extra=forbid`) — запрос с неизвестными полями будет отклонён.
+- `delay` — задержка в секундах (целое число ≥ 0).
+
+**Пример ошибки при невалидном payload** (`422`):
+
+```json
+{
+  "detail": [
+    {
+      "type": "value_error",
+      "loc": ["body", "payload", "email"],
+      "msg": "value is not a valid email address",
+      "input": "not-an-email"
+    }
+  ]
+}
+```

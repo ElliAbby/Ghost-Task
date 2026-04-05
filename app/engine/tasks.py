@@ -3,7 +3,7 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-async def send_email_welcome(email: str, name: str, **kwargs):
+async def send_email_welcome(email: str, name: str):
   logger.info(f"--- Отправка письма для {name} ({email}) ---")
   await asyncio.sleep(2)
   logger.info(f"--- Письмо для {name} ({email}) отправлено! ---")
