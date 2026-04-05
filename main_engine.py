@@ -8,6 +8,7 @@ from app.core.signals import stop_event, setup_signals
 from app.services.broker import TaskBroker
 from app.engine.orchestrator import orchestrator
 from app.engine.worker import worker
+from app.engine import tasks as _tasks  # noqa: F401
 
 
 logger = logging.getLogger(__name__)

@@ -1,11 +1,11 @@
-import asyncio
 import logging
 
 from app.services.broker import TaskBroker
 from app.core.schemas import TaskBase
 from app.core.signals import stop_event
 from app.core.config import config
-from app.engine.tasks import TASK_MAP
+from app.engine.registry import register
+
 
 logger = logging.getLogger(__name__)
 
@@ -14,16 +14,18 @@ async def worker(broker: TaskBroker, worker_id: int):
   logger.info(f"[Worker {worker_id}] Запущен и ждет задач...")
 
   while not stop_event.is_set():
+    task: TaskBase | None = None
     try:
-      task: TaskBase = await broker.fetch_task(timeout=5)
+      task = await broker.fetch_task(timeout=5)
       if not task:
         continue
 
       logger.info(f"[Worker {worker_id}] Выполняю: {task.id}: {task.function_name}...")
 
-      func = TASK_MAP.get(task.function_name)
+      func = register.get_task(task.function_name)
       if not func:
-        logger.error(f"Неизвестная функция: {task.function_name}")
+        logger.error(f"Ошибка: Функция '{task.function_name}' не зарегистрирована. "
+                     f"Доступные задачи: {register.list_tasks()}")
         await broker.move_to_dead_letter(task)
         continue
       

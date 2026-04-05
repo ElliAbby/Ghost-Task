@@ -42,7 +42,10 @@ ghost_task/
 │   ├── __init__.py
 │   ├── api/            # Всё, что касается HTTP (FastAPI)
 │   │   ├── __init__.py
-│   │   ├── routes.py   # Эндпоинты (POST /tasks, GET /stats)
+│   │   ├── routers/    # Эндпоинты
+│   │   |   ├── __init__.py
+│   │   |   ├── stats.py  # Статистика
+│   │   |   └── tasks.py  # Задачи
 │   │   └── deps.py     # Инъекция зависимостей (get_redis)
 │   │
 │   ├── core/           # Ядро системы (логика, которую делят все)
@@ -55,6 +58,7 @@ ghost_task/
 │   │   ├── __init__.py
 │   │   ├── orchestrator.py # "Менеджер зала"
 │   │   ├── worker.py       # "Повар"
+│   │   ├── registry.py     # Класс для маппинга функций
 │   │   └── tasks.py        # Список функций, которые умеет делать воркер
 │   │
 │   └── services/       # Бизнес-логика (Слой абстракции над Redis)
@@ -62,39 +66,35 @@ ghost_task/
 │       └── broker.py    # Класс TaskBroker
 │
 ├── tests/              # Папка для тестов
-├── .env                # Переменные окружения
+├── .env.example        # Пример переменных окружения
 ├── .gitignore
-├── docker-compose.yml  # Запуск Redis
+├── .dockerignore
+├── docker-compose.yml
+├── Dockerfile
 ├── requirements.txt    # Зависимости
+├── schema.excalidraw   # Схема объяснения принципа работы
 ├── main_api.py         # Точка входа для запуска FastAPI
 └── main_engine.py      # Точка входа для запуска Воркеров
 ```
 
 ## Установка и запуск
 
-1. Клонирование и окружение
+1. Клонирование
 
 ```bash
 git clone https://github.com/ElliAbby/Ghost-Task.git
 cd Ghost-Task
-python -m venv venv
-source venv/bin/activate # или venv\Scripts\activate для Windows
-pip install -r requirements.txt
 ```
 
 2. Запуск инфраструктуры
 
-### Запуск через Docker
-
-1. Запуск:
+Запуск:
 
 ```bash
 docker-compose up -d
 ```
 
-Перейти на http://localhost:8000
-
-2. Остановка:
+Остановка:
 
 ```bash
 docker-compose down
@@ -131,9 +131,11 @@ Interactive Docs (Swagger): http://127.0.0.1:8000/docs
 Эндпоинты:
 
 - `/tasks` - создать задачу
+- `/tasls/available` - доступные функции
 - `/stats` — информация о нагрузке на очереди
 
-Пример запроса на создание задачи:
+<details>
+<summary>Пример запроса на создание задачи:</summary>
 
 1. Для функции отправки письма
 
@@ -161,3 +163,19 @@ POST /tasks
   "delay": 60
 }
 ```
+
+3. Для функции оплаты
+
+```json
+POST /tasks
+{
+  "function_name": "process_payment",
+  "payload": {
+    "amount": 10,
+    "currency": "RUB"
+  },
+  "delay": 60
+}
+```
+
+</details>

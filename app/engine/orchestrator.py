@@ -16,7 +16,6 @@ async def orchestrator(broker: TaskBroker):
       ready_tasks = await broker.get_next_ready_task()
 
       if ready_tasks:
-        # task_json = ready_tasks[0]
         await broker.move_to_execution(ready_tasks)
         logger.info(f"[Orchestrator] Задача отправлена в конвейер: {ready_tasks}")
 
